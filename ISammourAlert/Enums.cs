@@ -8,7 +8,7 @@ using UIKit;
 
 namespace ISammourAlert
 {
-    public enum AlertStyle
+    public enum AlertType
     {
         Normal,
         Custom
