@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using UIKit;
 using Foundation;
+using System.Drawing;
 
 namespace ISammourAlert
 {
@@ -19,11 +20,15 @@ namespace ISammourAlert
         private UIWindow oldWindow,alertWindow;
         private List<UIView> viewsList;
         private List<UIButton> buttonsList;
+        private NSLayoutConstraint  centerY,centerX;
+        private UIView view;
+        private AnimationType _animationType;
 
-        public ISammourAlert(AlertType alertType)
+
+        public ISammourAlert(AlertType alertType,AnimationType animationType)
         {
             _alertType = alertType;
-
+            _animationType = animationType;
             TranslatesAutoresizingMaskIntoConstraints = false;
             BackgroundColor = UIColor.White;
             oldWindow = UIApplication.SharedApplication.KeyWindow;
@@ -32,7 +37,6 @@ namespace ISammourAlert
                 Console.WriteLine("Move window.rootViewController = yourViewController below window.makeKeyAndVisible");
                 return;
             }
-
             viewsList = new List<UIView>();
             buttonsList = new List<UIButton>();
         }
@@ -272,51 +276,125 @@ namespace ISammourAlert
         }
         public void Show()
         {
-
-
-            alertWindow = new UIWindow(UIScreen.MainScreen.Bounds);
-            alertWindow.WindowLevel = UIWindowLevel.Alert;
-            var controller = new UIViewController();
-
-            controller.Add(this);
-
-            var view = controller.View;
-
-            view.AddConstraint(NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterX, 1f, 0f));
-            view.AddConstraint(NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterY, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterY, 1f, 0f));
-            view.AddConstraint(NSLayoutConstraint.Create(this, NSLayoutAttribute.Width, NSLayoutRelation.Equal, view, NSLayoutAttribute.Width, 0.9f, 0f));
-
-            if (_alertType == AlertType.Normal)
+            if(alertWindow == null)
             {
-                AddButtons();
-                CreateNormalAlert();
-                LayoutNormalAlert();
-                LayoutAlertButtons();
+                alertWindow = new UIWindow(UIScreen.MainScreen.Bounds);
+                alertWindow.WindowLevel = UIWindowLevel.StatusBar;
+                var controller = new UIViewController();
+                Hidden = true;
+                controller.Add(this);
+
+                view = controller.View;
+
+                AnimationInitialPositions();
+
+                view.AddConstraint(centerX);
+                view.AddConstraint(centerY);
+                view.AddConstraint(NSLayoutConstraint.Create(this, NSLayoutAttribute.Width, NSLayoutRelation.Equal, view, NSLayoutAttribute.Width, 0.9f, 0f));
+
+                if (_alertType == AlertType.Normal)
+                {
+                    AddButtons();
+                    CreateNormalAlert();
+                    LayoutNormalAlert();
+                    LayoutAlertButtons();
+                }
+                else if(_alertType == AlertType.Custom)
+                {
+                    AddCustomViews();
+                    AddButtons();
+                    LayoutCustomAlert();
+                    LayoutAlertButtons();
+                }
+                alertWindow.RootViewController = controller;
+
+                alertWindow.MakeKeyAndVisible();
+                int height = CalculateHeight();
+                view.AddConstraint(NSLayoutConstraint.Create(this, NSLayoutAttribute.Height, NSLayoutRelation.Equal, view, NSLayoutAttribute.Height, 0f, height));
+
             }
-            else if(_alertType == AlertType.Custom)
+            view = alertWindow.RootViewController.View;
+            alertWindow.Hidden = false;
+            OnAnimationShow();
+            UIView.Animate(1, 0, UIViewAnimationOptions.TransitionFlipFromRight, () => {view.LayoutIfNeeded();  Hidden = false; oldWindow.Alpha = 0.5f; }, null);
+        }
+        private void AnimationInitialPositions()
+        {
+            //Setting start positions
+            if (_animationType == AnimationType.TopToCenter)
             {
-                AddCustomViews();
-                AddButtons();
-                LayoutCustomAlert();
-                LayoutAlertButtons();
+                centerX = NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterX, 1f, 0f);
+                centerY = NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterY, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterY, 0f, -300f);
             }
-            alertWindow.RootViewController = controller;
-            
-            UIView.Animate(1, 0, UIViewAnimationOptions.TransitionFlipFromRight, () => {alertWindow.MakeKeyAndVisible() ; oldWindow.Alpha = 0.5f; }, null);
-            int height = CalculateHeight();
-            view.AddConstraint(NSLayoutConstraint.Create(this, NSLayoutAttribute.Height, NSLayoutRelation.Equal, view, NSLayoutAttribute.Height, 0f, height));
+            if (_animationType == AnimationType.RightToCenter)
+            {
+                centerX = NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterX, 0f, 300f);
+                centerY = NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterY, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterY, 1f, 0f);
+            }
+
+            if (_animationType == AnimationType.LeftToCenter)
+            {
+                centerX = NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterX, 0f, -300f);
+                centerY = NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterY, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterY, 0f, -100f);
+            }
+            if (_animationType == AnimationType.BottomToCenter)
+            {
+                centerX = NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterX, 1f, 300f);
+                centerY = NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterY, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterY, 0f, -100f);
+            }
+        }
+        private void OnAnimationShow()
+        {
+            var screenHeight = alertWindow.RootViewController.View.Frame.Height;
+            var screenWidth = alertWindow.RootViewController.View.Frame.Width;
+            if(_animationType == AnimationType.TopToCenter)
+            {
+                centerY.Constant = screenHeight / 2;
+            }
+            if(_animationType == AnimationType.RightToCenter)
+            {
+                centerX.Constant = screenWidth / 2;
+            }
+            if(_animationType == AnimationType.LeftToCenter)
+            {
+                centerX.Constant = screenWidth / 2;
+            }
+            if(_animationType == AnimationType.BottomToCenter)
+            {
+                centerY.Constant = screenHeight / 2;
+            }
+        }
+        private void OnAnimationDismiss()
+        {
+            if (_animationType == AnimationType.TopToCenter)
+            {
+                centerY.Constant = -300f ;
+            }
+            if (_animationType == AnimationType.RightToCenter)
+            {
+                centerX.Constant = 300f;
+            }
+            if (_animationType == AnimationType.LeftToCenter)
+            {
+                centerX.Constant = -300f;
+            }
+            if (_animationType == AnimationType.BottomToCenter)
+            {
+                centerY.Constant = 300f;
+            }
         }
         private void Dismiss(object sender, EventArgs ea)
         {
-            oldWindow.MakeKeyWindow();
 
             var screenHeight = alertWindow.RootViewController.View.Frame.Height;
             var screenWidth = alertWindow.RootViewController.View.Frame.Width;
-            UIView.Animate(1, 0, UIViewAnimationOptions.CurveEaseOut, () => { this.Center = new CGPoint(screenWidth/2, -100); oldWindow.Alpha = 1f;}, ()=> {
-                alertWindow.Dispose();
-                alertWindow.RemoveFromSuperview();
-                alertWindow = null;
+            OnAnimationDismiss();
+            UIView.Animate(1, 0, UIViewAnimationOptions.CurveEaseOut, () => { view.LayoutIfNeeded(); oldWindow.Alpha = 1f;},()=> {
+                Hidden = true;
+                alertWindow.Hidden = true;
+                oldWindow.MakeKeyWindow();
             });
+            
         }
         public override void TouchesBegan(NSSet touches, UIEvent evt)
         {

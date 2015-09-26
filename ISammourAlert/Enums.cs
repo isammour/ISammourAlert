@@ -18,4 +18,11 @@ namespace ISammourAlert
         AlphaNumeric,
         Numeric
     }
+    public enum AnimationType
+    {
+        TopToCenter,
+        LeftToCenter,
+        RightToCenter,
+        BottomToCenter
+    }
 }
