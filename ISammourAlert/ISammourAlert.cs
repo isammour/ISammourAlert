@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UIKit;
+using Foundation;
 
 namespace ISammourAlert
 {
@@ -84,20 +85,25 @@ namespace ISammourAlert
         }
         public void AddView(UIView view)
         {
+            if(_alertType == AlertType.Custom)
+            {
             view.TranslatesAutoresizingMaskIntoConstraints = false;
             viewsList.Add(view);
+            }
         }
         public void AddButton(string title,EventHandler buttonClicked,int fontSize)
         {
-            var button = new UIButton(UIButtonType.RoundedRect);
-            button.SetTitle(title ?? "Cancel", UIControlState.Normal);
-            button.SetTitleColor(UIColor.Black, UIControlState.Normal);
-            button.BackgroundColor = UIColor.FromRGB(0.89f, 0.71f, 0.71f);
-            button.Layer.CornerRadius = 5f;
-            button.Font = UIFont.SystemFontOfSize(fontSize);
-            button.TouchUpInside += buttonClicked ?? Dismiss;
-            button.TranslatesAutoresizingMaskIntoConstraints = false;
-            buttonsList.Add(button);
+                var button = new UIButton(UIButtonType.RoundedRect);
+                button.SetTitle(title ?? "Cancel", UIControlState.Normal);
+                button.SetTitleColor(UIColor.White, UIControlState.Normal);
+                button.BackgroundColor = UIColor.FromRGB(1f, 0.25f, 0.51f);
+                //button.Layer.CornerRadius = 5f;
+                button.Layer.BorderColor = UIColor.Gray.CGColor;
+                button.Layer.BorderWidth = 1f;
+                button.Font = UIFont.SystemFontOfSize(fontSize);
+                button.TouchUpInside += buttonClicked ?? Dismiss;
+                button.TranslatesAutoresizingMaskIntoConstraints = false;
+                buttonsList.Add(button);
         }
         private void CreateNormalAlert()
         {
@@ -105,20 +111,9 @@ namespace ISammourAlert
             message = CreateLabel(Message, 18, false, UITextAlignment.Left);
             message.LineBreakMode = UILineBreakMode.WordWrap;
             message.Lines = 0;
-
-            normalButton = new UIButton(UIButtonType.RoundedRect);
-            normalButton.SetTitle(ButtonTitle, UIControlState.Normal);
-            normalButton.SetTitleColor(UIColor.Black, UIControlState.Normal);
-            normalButton.BackgroundColor = UIColor.FromRGB(0.89f, 0.71f, 0.71f);
-            normalButton.Layer.BorderWidth = 1f;
-            normalButton.Layer.BorderColor = UIColor.Gray.CGColor;
-            normalButton.Font = UIFont.SystemFontOfSize(18);
-            normalButton.TranslatesAutoresizingMaskIntoConstraints = false;
-            normalButton.TouchUpInside += Dismiss;
-
+            
             Add(title);
             Add(message);
-            Add(normalButton);
         }
         private void LayoutNormalAlert()
         {
@@ -140,20 +135,147 @@ namespace ISammourAlert
             AddConstraint(NSLayoutConstraint.Create(normalButton, NSLayoutAttribute.Width, NSLayoutRelation.Equal, this, NSLayoutAttribute.Width, 1f, 0f));
             //AddConstraint(NSLayoutConstraint.Create(normalButton, NSLayoutAttribute.Height, NSLayoutRelation.Equal, this, NSLayoutAttribute.Height, 1f, 20f));
         }
+        private void AddCustomViews()
+        {
+            foreach(var view in viewsList)
+            {
+                Add(view);
+            }
+            
+        }
+        private void AddButtons()
+        {
+            foreach (var button in buttonsList)
+            {
+                Add(button);
+                AddConstraint(NSLayoutConstraint.Create(button, NSLayoutAttribute.Height, NSLayoutRelation.Equal, button, NSLayoutAttribute.Height, 1f, 20f));
+            }
+        }
         private void LayoutCustomAlert()
         {
+            if (viewsList.Count != 0)
+            {
+                AddConstraint(NSLayoutConstraint.Create(viewsList[0], NSLayoutAttribute.Top, NSLayoutRelation.Equal, this, NSLayoutAttribute.Top, 1f, 10f));
+                for (int i = 0; i < viewsList.Count; i++)
+                {
+                    AddConstraint(NSLayoutConstraint.Create(viewsList[i], NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, this, NSLayoutAttribute.CenterX, 1f, 0f));
+                    AddConstraint(NSLayoutConstraint.Create(viewsList[i], NSLayoutAttribute.Width, NSLayoutRelation.Equal, this, NSLayoutAttribute.Width, 0.9f, 0f));
+                    if (i != 0)
+                    {
+                        AddConstraint(NSLayoutConstraint.Create(viewsList[i], NSLayoutAttribute.Top, NSLayoutRelation.Equal, viewsList[i - 1], NSLayoutAttribute.Bottom, 1f, 10f));
+                    }
+                }
+            }
+        }
+        private void LayoutAlertButtons()
+        {
+            var lastElementIndex = buttonsList.Count - 1;
+            if (buttonsList.Count != 0)
+            {
+                if(lastElementIndex == 0)
+                {
+                    AddConstraint(NSLayoutConstraint.Create(buttonsList[lastElementIndex], NSLayoutAttribute.Bottom, NSLayoutRelation.Equal, this, NSLayoutAttribute.Bottom, 1f, 0f));
+                    AddConstraint(NSLayoutConstraint.Create(buttonsList[lastElementIndex], NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, this, NSLayoutAttribute.CenterX, 1f, 0f));
+                    AddConstraint(NSLayoutConstraint.Create(buttonsList[lastElementIndex], NSLayoutAttribute.Width, NSLayoutRelation.Equal, this, NSLayoutAttribute.Width, 1f, 0f));
+                    return;
+                }
+                else if (buttonsList.Count %2 != 0 && lastElementIndex !=0)
+                {
+                    AddConstraint(NSLayoutConstraint.Create(buttonsList[lastElementIndex], NSLayoutAttribute.Bottom, NSLayoutRelation.Equal, this, NSLayoutAttribute.Bottom, 1f, 0f));
+                    AddConstraint(NSLayoutConstraint.Create(buttonsList[lastElementIndex], NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, this, NSLayoutAttribute.CenterX, 1f, 0f));
+                    AddConstraint(NSLayoutConstraint.Create(buttonsList[lastElementIndex], NSLayoutAttribute.Width, NSLayoutRelation.Equal, this, NSLayoutAttribute.Width, 1f, 0f));
+                    for(int i = lastElementIndex - 1; i >= 0; i--)
+                    {
+                        if(i%2 != 0)
+                        {
+                            AddConstraint(NSLayoutConstraint.Create(buttonsList[i], NSLayoutAttribute.Right, NSLayoutRelation.Equal, this, NSLayoutAttribute.Right, 1f, 0f));
+                            AddConstraint(NSLayoutConstraint.Create(buttonsList[i], NSLayoutAttribute.Width, NSLayoutRelation.Equal, this, NSLayoutAttribute.Width, 0.5f, 0f));
+                        }
+                        else if (i%2 == 0)
+                        {
+                            AddConstraint(NSLayoutConstraint.Create(buttonsList[i], NSLayoutAttribute.Right, NSLayoutRelation.Equal, buttonsList[i + 1], NSLayoutAttribute.Left, 1f, 0f));
+                            AddConstraint(NSLayoutConstraint.Create(buttonsList[i], NSLayoutAttribute.Width, NSLayoutRelation.Equal, this, NSLayoutAttribute.Width, 0.5f, 0f));
+                        }
+
+                        if (i + 2 > lastElementIndex)
+                        {
+                            AddConstraint(NSLayoutConstraint.Create(buttonsList[i], NSLayoutAttribute.Bottom, NSLayoutRelation.Equal, buttonsList[lastElementIndex], NSLayoutAttribute.Top, 1f, 0f));
+                        }
+                        else
+                        {
+                            AddConstraint(NSLayoutConstraint.Create(buttonsList[i], NSLayoutAttribute.Bottom, NSLayoutRelation.Equal, buttonsList[i + 2], NSLayoutAttribute.Top, 1f, 0f));
+                        }
+                    }
+                    return;
+                }
+                else if(buttonsList.Count %2 ==0 && lastElementIndex != 0)
+                {
+                    for(int i = lastElementIndex; i >= 0; i--)
+                    {
+                        if(i == lastElementIndex)
+                        {
+                            AddConstraint(NSLayoutConstraint.Create(buttonsList[i], NSLayoutAttribute.Bottom, NSLayoutRelation.Equal, this, NSLayoutAttribute.Bottom, 1f, 0f));
+                        }
+                        if (i % 2 != 0)
+                        {
+                            AddConstraint(NSLayoutConstraint.Create(buttonsList[i], NSLayoutAttribute.Right, NSLayoutRelation.Equal, this, NSLayoutAttribute.Right, 1f, 0f));
+                            AddConstraint(NSLayoutConstraint.Create(buttonsList[i], NSLayoutAttribute.Width, NSLayoutRelation.Equal, this, NSLayoutAttribute.Width, 0.5f, 0f));
+                        }
+                        else if (i % 2 == 0)
+                        {
+                            AddConstraint(NSLayoutConstraint.Create(buttonsList[i], NSLayoutAttribute.Right, NSLayoutRelation.Equal, buttonsList[i + 1], NSLayoutAttribute.Left, 1f, 0f));
+                            AddConstraint(NSLayoutConstraint.Create(buttonsList[i], NSLayoutAttribute.Width, NSLayoutRelation.Equal, this, NSLayoutAttribute.Width, 0.5f, 0f));
+                        }
+                        if(i != lastElementIndex)
+                        {
+                            if (i + 2 > lastElementIndex)
+                            {
+                                AddConstraint(NSLayoutConstraint.Create(buttonsList[i], NSLayoutAttribute.Bottom, NSLayoutRelation.Equal, this, NSLayoutAttribute.Bottom, 1f, 0f));
+                            }
+                            else
+                            {
+                                AddConstraint(NSLayoutConstraint.Create(buttonsList[i], NSLayoutAttribute.Bottom, NSLayoutRelation.Equal, buttonsList[i + 2], NSLayoutAttribute.Top, 1f, 0f));
+                            }
+                        }
+                    }
+                    return;
+                }
+            }
         }
         private int CalculateHeight()
         {
-            if(_alertType == AlertType.Normal)
+            int height = 30;
+            int buttonsHeight = 0;
+            if (_alertType == AlertType.Normal)
             {
-                return 30 + (int)(message.Frame.Height + title.Frame.Height + normalButton.Frame.Height);
+                height += (int)(message.Frame.Height + title.Frame.Height);
+                foreach(var button in buttonsList)
+                {
+                    height +=(int)button.Frame.Height;
+                }
+                return height;
+            }
+            else if(_alertType == AlertType.Custom)
+            {
+                foreach(var view in viewsList)
+                {
+                    height += (int)view.Frame.Height + 10;
+                }
+                foreach(var button in buttonsList)
+                {
+                    buttonsHeight += (int)button.Frame.Height;
+                }
+                height += buttonsHeight / 2;
+                return height;
             }
             return 0;
         }
         public void Show()
         {
+
+
             alertWindow = new UIWindow(UIScreen.MainScreen.Bounds);
+            alertWindow.WindowLevel = UIWindowLevel.Alert;
             var controller = new UIViewController();
 
             controller.Add(this);
@@ -166,15 +288,22 @@ namespace ISammourAlert
 
             if (_alertType == AlertType.Normal)
             {
-            CreateNormalAlert();
-            LayoutNormalAlert();
+                AddButtons();
+                CreateNormalAlert();
+                LayoutNormalAlert();
+                LayoutAlertButtons();
             }
-
+            else if(_alertType == AlertType.Custom)
+            {
+                AddCustomViews();
+                AddButtons();
+                LayoutCustomAlert();
+                LayoutAlertButtons();
+            }
             alertWindow.RootViewController = controller;
-            alertWindow.MakeKeyAndVisible();
-
-            int height = CalculateHeight();
             
+            UIView.Animate(1, 0, UIViewAnimationOptions.TransitionFlipFromRight, () => {alertWindow.MakeKeyAndVisible() ; oldWindow.Alpha = 0.5f; }, null);
+            int height = CalculateHeight();
             view.AddConstraint(NSLayoutConstraint.Create(this, NSLayoutAttribute.Height, NSLayoutRelation.Equal, view, NSLayoutAttribute.Height, 0f, height));
         }
         private void Dismiss(object sender, EventArgs ea)
@@ -183,12 +312,22 @@ namespace ISammourAlert
 
             var screenHeight = alertWindow.RootViewController.View.Frame.Height;
             var screenWidth = alertWindow.RootViewController.View.Frame.Width;
-            UIView.Animate(2, 0, UIViewAnimationOptions.CurveEaseIn, () => { this.Center = new CGPoint(screenWidth/2, -100); }, ()=> {
+            UIView.Animate(1, 0, UIViewAnimationOptions.CurveEaseOut, () => { this.Center = new CGPoint(screenWidth/2, -100); oldWindow.Alpha = 1f;}, ()=> {
                 alertWindow.Dispose();
                 alertWindow.RemoveFromSuperview();
                 alertWindow = null;
             });
-            
+        }
+        public override void TouchesBegan(NSSet touches, UIEvent evt)
+        {
+            base.TouchesBegan(touches, evt);
+            foreach(var view in viewsList)
+            {
+                if(view.IsFirstResponder)
+                {
+                    view.ResignFirstResponder();
+                }
+            }
         }
     }
 }
