@@ -257,8 +257,13 @@ namespace ISammourAlert
                 height += (int)(message.Frame.Height + title.Frame.Height);
                 foreach(var button in buttonsList)
                 {
-                    height +=(int)button.Frame.Height;
+                    buttonsHeight +=(int)button.Frame.Height;
                 }
+                if(buttonsList.Count%2 != 0 && buttonsList.Count != 0)
+                {
+                    height += (int)buttonsList[0].Frame.Height;
+                }
+                height += buttonsHeight / 2;
                 return height;
             }
             else if(_alertType == AlertType.Custom)
@@ -270,6 +275,10 @@ namespace ISammourAlert
                 foreach(var button in buttonsList)
                 {
                     buttonsHeight += (int)button.Frame.Height;
+                }
+                if (buttonsList.Count % 2 == 0 && buttonsList.Count != 0)
+                {
+                    height += (int)buttonsList[0].Frame.Height;
                 }
                 height += buttonsHeight / 2;
                 return height;
