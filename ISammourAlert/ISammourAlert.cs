@@ -1,11 +1,7 @@
-﻿using CoreGraphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UIKit;
 using Foundation;
-using System.Drawing;
 
 namespace ISammourAlert
 {
