@@ -28,8 +28,7 @@ namespace ISammourAlert
 			oldWindow = UIApplication.SharedApplication.KeyWindow;
 			if (oldWindow == null)
 			{
-				Console.WriteLine("Move window.rootViewController = yourViewController below window.makeKeyAndVisible");
-				return;
+				throw new InvalidOperationException("Move window.rootViewController = yourViewController below window.makeKeyAndVisible");
 			}
 			viewsList = new List<UIView>();
 			buttonsList = new List<UIButton>();
