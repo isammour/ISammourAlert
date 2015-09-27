@@ -320,6 +320,7 @@ namespace ISammourAlert
                 alertWindow.RootViewController = controller;
 
                 alertWindow.MakeKeyAndVisible();
+                view.LayoutIfNeeded();
                 int height = CalculateHeight();
                 view.AddConstraint(NSLayoutConstraint.Create(this, NSLayoutAttribute.Height, NSLayoutRelation.Equal, view, NSLayoutAttribute.Height, 0f, height));
 
@@ -328,6 +329,13 @@ namespace ISammourAlert
             alertWindow.Hidden = false;
             OnAnimationShow();
             UIView.Animate(1, 0, UIViewAnimationOptions.TransitionFlipFromRight, () => {view.LayoutIfNeeded();  Hidden = false; oldWindow.Alpha = 0.5f; }, null);
+            Console.WriteLine(title.Frame.Height);
+            Console.WriteLine(message.Frame.Height);
+            foreach(var btn in buttonsList)
+            {
+                Console.WriteLine(btn.Frame.Height);
+            }
+            Console.WriteLine(this.Frame.Height);
         }
         private void AnimationInitialPositions()
         {
