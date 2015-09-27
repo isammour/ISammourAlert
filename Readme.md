@@ -1,6 +1,6 @@
-#ISammourAlert
+# ISammourAlert
 
-##Description : 
+## Description : 
 
 Custom alert for ios wich can hold any type of views and buttons placed in the order the developer wants with some basic animations (I will add more awesome animations soon).
 <br/>Creates Labels and TextFields for you .
@@ -8,7 +8,7 @@ Custom alert for ios wich can hold any type of views and buttons placed in the o
 	var label = alert.CreateLabel("Label Text",fontSize,bold,UITextAlignment.Left);
 	var textField = alert. CreateTextField("placeholder",fontSize,maxNumbersRange,TextFieldStyle.Numeric);
 ```
-##CustomAlert
+## CustomAlert
 
 ![](Images/CustomAlert.png)
 
@@ -29,7 +29,7 @@ Console.WriteLine("Choose button Clicked");
 }
 ```
 
-##Normal Alert
+## Normal Alert
 
 ![](Images/NormalAlert.png)
 ```cs
