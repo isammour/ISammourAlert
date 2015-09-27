@@ -15,8 +15,8 @@ namespace ISammourAlert
         public string Message { get; set; } = "Message";
         public string ButtonTitle { get; set; } = "Dismiss";
         private UILabel title, message;
-        private UIButton normalButton;
         private AlertType _alertType;
+        private UIButton normalButton;
         private UIWindow oldWindow,alertWindow;
         private List<UIView> viewsList;
         private List<UIButton> buttonsList;
@@ -29,8 +29,10 @@ namespace ISammourAlert
         {
             _alertType = alertType;
             _animationType = animationType;
+
             TranslatesAutoresizingMaskIntoConstraints = false;
             BackgroundColor = UIColor.White;
+            Layer.CornerRadius = 5f;
             oldWindow = UIApplication.SharedApplication.KeyWindow;
             if (oldWindow == null)
             {
@@ -100,10 +102,10 @@ namespace ISammourAlert
                 var button = new UIButton(UIButtonType.RoundedRect);
                 button.SetTitle(title ?? "Cancel", UIControlState.Normal);
                 button.SetTitleColor(UIColor.White, UIControlState.Normal);
-                button.BackgroundColor = UIColor.FromRGB(1f, 0.25f, 0.51f);
+                button.BackgroundColor = UIColor.FromRGB(0.56f,0.79f,0.98f);
                 //button.Layer.CornerRadius = 5f;
                 button.Layer.BorderColor = UIColor.Gray.CGColor;
-                button.Layer.BorderWidth = 1f;
+                button.Layer.BorderWidth = 0.5f;
                 button.Font = UIFont.SystemFontOfSize(fontSize);
                 button.TouchUpInside += buttonClicked ?? Dismiss;
                 button.TranslatesAutoresizingMaskIntoConstraints = false;
@@ -320,33 +322,34 @@ namespace ISammourAlert
         }
         private void AnimationInitialPositions()
         {
+            var screenHeight = UIScreen.MainScreen.Bounds.Height * 2;
+            var screenWidth = UIScreen.MainScreen.Bounds.Width;
             //Setting start positions
             if (_animationType == AnimationType.TopToCenter)
             {
                 centerX = NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterX, 1f, 0f);
-                centerY = NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterY, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterY, 1f, -300f);
+                centerY = NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterY, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterY, 1f, -1000);
             }
             if (_animationType == AnimationType.RightToCenter)
             {
-                centerX = NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterX, 1f, 300f);
+                centerX = NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterX, 1f, 1000);
                 centerY = NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterY, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterY, 1f, 0f);
             }
 
             if (_animationType == AnimationType.LeftToCenter)
             {
-                centerX = NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterX, 1f, -300f);
+                centerX = NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterX, 1f, -1000);
                 centerY = NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterY, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterY, 1f, 0f);
             }
             if (_animationType == AnimationType.BottomToCenter)
             {
                 centerX = NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterX, 1f, 0f);
-                centerY = NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterY, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterY, 1f, -300f);
+                centerY = NSLayoutConstraint.Create(this, NSLayoutAttribute.CenterY, NSLayoutRelation.Equal, view, NSLayoutAttribute.CenterY, 1f, 1000);
             }
         }
         private void OnAnimationShow()
         {
-            var screenHeight = alertWindow.RootViewController.View.Frame.Height;
-            var screenWidth = alertWindow.RootViewController.View.Frame.Width;
+            
             if(_animationType == AnimationType.TopToCenter)
             {
                 centerY.Constant = 0;
@@ -368,19 +371,19 @@ namespace ISammourAlert
         {
             if (_animationType == AnimationType.TopToCenter)
             {
-                centerY.Constant = -300f ;
+                centerY.Constant = -1000f ;
             }
             if (_animationType == AnimationType.RightToCenter)
             {
-                centerX.Constant = 300f;
+                centerX.Constant = 1000f;
             }
             if (_animationType == AnimationType.LeftToCenter)
             {
-                centerX.Constant = -300f;
+                centerX.Constant = -1000f;
             }
             if (_animationType == AnimationType.BottomToCenter)
             {
-                centerY.Constant = 300f;
+                centerY.Constant = 1000f;
             }
         }
         private void Dismiss(object sender, EventArgs ea)
