@@ -126,7 +126,7 @@ namespace ISammourAlert
             //CenterX
             AddConstraint(NSLayoutConstraint.Create(title, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, this, NSLayoutAttribute.CenterX,1f,0f));
             AddConstraint(NSLayoutConstraint.Create(message, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, this, NSLayoutAttribute.CenterX,1f,0f));
-            AddConstraint(NSLayoutConstraint.Create(normalButton, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, this, NSLayoutAttribute.CenterX, 1f, 0f));
+            //AddConstraint(NSLayoutConstraint.Create(normalButton, NSLayoutAttribute.CenterX, NSLayoutRelation.Equal, this, NSLayoutAttribute.CenterX, 1f, 0f));
 
             //Title
             AddConstraint(NSLayoutConstraint.Create(title, NSLayoutAttribute.Top, NSLayoutRelation.Equal, this, NSLayoutAttribute.Top, 1f, 10f));
@@ -137,8 +137,8 @@ namespace ISammourAlert
             AddConstraint(NSLayoutConstraint.Create(message, NSLayoutAttribute.Width, NSLayoutRelation.Equal, this, NSLayoutAttribute.Width, 0.9f, 0f));
 
             //Button
-            AddConstraint(NSLayoutConstraint.Create(normalButton, NSLayoutAttribute.Bottom, NSLayoutRelation.Equal, this, NSLayoutAttribute.Bottom, 1f, 5f));
-            AddConstraint(NSLayoutConstraint.Create(normalButton, NSLayoutAttribute.Width, NSLayoutRelation.Equal, this, NSLayoutAttribute.Width, 1f, 0f));
+            //AddConstraint(NSLayoutConstraint.Create(normalButton, NSLayoutAttribute.Bottom, NSLayoutRelation.Equal, this, NSLayoutAttribute.Bottom, 1f, 5f));
+            //AddConstraint(NSLayoutConstraint.Create(normalButton, NSLayoutAttribute.Width, NSLayoutRelation.Equal, this, NSLayoutAttribute.Width, 1f, 0f));
             //AddConstraint(NSLayoutConstraint.Create(normalButton, NSLayoutAttribute.Height, NSLayoutRelation.Equal, this, NSLayoutAttribute.Height, 1f, 20f));
         }
         private void AddCustomViews()
