@@ -10,7 +10,7 @@ Custom alert for ios wich can hold any type of views and buttons placed in the o
 ```
 ## CustomAlert
 
-![](Images/CustomAlert.png)
+
 
 ```cs
 {
@@ -32,7 +32,7 @@ void ChooseButtonClicked(object sender, EventArgs e)
 
 ## Normal Alert
 
-![](Images/NormalAlert.png)
+
 ```cs
 {
 	....
