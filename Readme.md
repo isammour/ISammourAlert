@@ -2,7 +2,7 @@
 
 ## Description : 
 
-Custom alert for ios wich can hold any type of views and buttons placed in the order the developer wants with some basic animations (I will add more awesome animations soon).
+Custom alert for ios which can hold any type of views and buttons placed in the order the developer wants with some basic animations (I'll add a lot of awesome animations soon).
 <br/>Creates Labels and TextFields for you.
 ```cs
 	var label = alert.CreateLabel("Label Text", fontSize, bold, UITextAlignment.Left);
